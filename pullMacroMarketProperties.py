@@ -46,38 +46,41 @@ INDUS = 'Aerospace & Defense'
 companylist = fd.select_equities(country=COUN, industry=INDUS)
 
 '-----------------------------------------------------------------------------------------------------------------------------'
-# can be deactivitaed if json file exists
-fundamentals = {}
-for symbol in companylist:
-    fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
+# # can be deactivitaed if json file exists
+# fundamentals = {}
+# for symbol in companylist:
+#     fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
 
-# stock_data = download(list(companylist))
+# # stock_data = download(list(companylist))
 
-fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
+# fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
 
-# gh = pd.concat({k: pd.DataFrame(v).T for k, v in fundamentals.items()}, axis=0)
-
-with open('data.json', 'w') as fp:
-    json.dump(fundamentals, fp)
+# with open(COUN + INDUS + '.json', 'w') as fp:
+#     json.dump(fundamentals, fp)
 
 '------------------------------------------------------------------------------------------------------------------------------'
 
-with open('data.json', 'r') as fp:
+with open(COUN + INDUS + '.json', 'r') as fp:
     fundamentals = json.load(fp)
 
+'---------------------------------------------------------------------------------------------------------------------------------'
+
+housing = 'defaultKeyStatistics'
+item = 'priceToBook'
 
 long_name = []
 parameter = []
 
+
 for symbol in fundamentals:
     if len(fundamentals[symbol]) < 10:
         continue
-    elif fundamentals[symbol]['defaultKeyStatistics'] is None:
+    elif fundamentals[symbol][housing] is None:
         continue
-    elif fundamentals[symbol]['defaultKeyStatistics']['priceToBook'] is None:
+    elif fundamentals[symbol][housing][item] is None:
         continue
     
-    a = fundamentals[symbol]['defaultKeyStatistics']['priceToBook']
+    a = fundamentals[symbol][housing][item]
     b = fundamentals[symbol]['quoteType']['longName']
     long_name.append(b)
     parameter.append(a)
@@ -85,49 +88,31 @@ for symbol in fundamentals:
     if fundamentals is None:
         continue
 
+
 # long_name = list(dict.fromkeys(long_name))
 # parameter = list(dict.fromkeys(parameter))
 
 y_pos = np.arange(len(parameter))
 
 
+# Graphing Controls
+
 plt.barh(y_pos, parameter, color = Cs)
 plt.yticks(y_pos, long_name, rotation='horizontal')
 plt.tick_params(axis = 'y', labelsize = 4)
-# Pad margins so that markers don't get clipped by the axes
 plt.margins(0.2)
-plt.xlabel('priceToBook')
+plt.xlabel(item)
 plt.grid(b = True)
-# Tweak spacing to prevent clipping of tick-labels
 plt.subplots_adjust(bottom=0.15)
 
 
 plt.tight_layout()
-plt.savefig('filename.png', dpi=600)
+plt.savefig(COUN + ' ' +  INDUS + ' ' + item + '.png', dpi=600)
 plt.show()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Export Data to csv
+Combined = pd.DataFrame({'long_name': long_name, item : parameter})
+Combined.to_csv(COUN + ' ' +  INDUS + ' ' + item + '.csv', index = False)
 
 
 
