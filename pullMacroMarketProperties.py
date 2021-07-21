@@ -45,19 +45,20 @@ fundamentals = {}
 for symbol in companylist:
     fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
 
-# airlines_us_stock_data = download(list(companylist))
+stock_data = download(list(companylist))
 
 fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
+
 # gh = pd.concat({k: pd.DataFrame(v).T for k, v in fundamentals.items()}, axis=0)
 
 long_name = []
 parameter = []
 
 for symbol in fundamentals:
-    if fundamentals[symbol]['defaultKeyStatistics']['beta'] is None:
+    if fundamentals[symbol]['defaultKeyStatistics']['pegRatio'] is None:
         continue
     else:
-        a = fundamentals[symbol]['defaultKeyStatistics']['beta']
+        a = fundamentals[symbol]['defaultKeyStatistics']['pegRatio']
         b = fundamentals[symbol]['quoteType']['longName']
         long_name.append(b)
         parameter.append(a)
@@ -75,11 +76,13 @@ plt.barh(y_pos, parameter)
 plt.yticks(y_pos, long_name, rotation='horizontal')
 # Pad margins so that markers don't get clipped by the axes
 plt.margins(0.2)
+plt.xlabel('pegRatio')
+plt.grid(b = True)
 # Tweak spacing to prevent clipping of tick-labels
 plt.subplots_adjust(bottom=0.15)
 
-plt.show()
 
+plt.show()
 
 
 
