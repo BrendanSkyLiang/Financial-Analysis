@@ -5,7 +5,6 @@ Created on Tue Jul 20 19:10:08 2021
 
 @author: brendanliang
 """
-
 import FinanceDatabase as fd
 import numpy as np
 import xlsxwriter
@@ -21,6 +20,7 @@ import math
 from yfinance.utils import get_json
 from yfinance import download
 import matplotlib.pyplot as plt
+import json
 
 # Obtain all countries from the database
 equities_countries = fd.show_options('equities', 'countries')
@@ -36,7 +36,7 @@ equities_all_categories = fd.show_options('equities')
 
 
 COUN = 'United States'
-INDUS = 'Airlines'
+INDUS = 'Aerospace & Defense'
 
 
 companylist = fd.select_equities(country=COUN, industry=INDUS)
@@ -45,7 +45,7 @@ fundamentals = {}
 for symbol in companylist:
     fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
 
-stock_data = download(list(companylist))
+# stock_data = download(list(companylist))
 
 fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
 
@@ -55,19 +55,23 @@ long_name = []
 parameter = []
 
 for symbol in fundamentals:
-    if fundamentals[symbol]['defaultKeyStatistics']['pegRatio'] is None:
+    if len(fundamentals[symbol]) < 10:
         continue
-    else:
-        a = fundamentals[symbol]['defaultKeyStatistics']['pegRatio']
-        b = fundamentals[symbol]['quoteType']['longName']
-        long_name.append(b)
-        parameter.append(a)
+    elif fundamentals[symbol]['defaultKeyStatistics'] is None:
+        continue
+    elif fundamentals[symbol]['defaultKeyStatistics']['priceToBook'] is None:
+        continue
+    
+    a = fundamentals[symbol]['defaultKeyStatistics']['priceToBook']
+    b = fundamentals[symbol]['quoteType']['longName']
+    long_name.append(b)
+    parameter.append(a)
 
-        if fundamentals is None:
-            continue
+    if fundamentals is None:
+        continue
 
-long_name = list(dict.fromkeys(long_name))
-parameter = list(dict.fromkeys(parameter))
+# long_name = list(dict.fromkeys(long_name))
+# parameter = list(dict.fromkeys(parameter))
 
 y_pos = np.arange(len(parameter))
 
@@ -76,14 +80,13 @@ plt.barh(y_pos, parameter)
 plt.yticks(y_pos, long_name, rotation='horizontal')
 # Pad margins so that markers don't get clipped by the axes
 plt.margins(0.2)
-plt.xlabel('pegRatio')
+plt.xlabel('priceToBook')
 plt.grid(b = True)
 # Tweak spacing to prevent clipping of tick-labels
 plt.subplots_adjust(bottom=0.15)
 
 
 plt.show()
-
 
 
 
