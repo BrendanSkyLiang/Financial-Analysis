@@ -68,6 +68,7 @@ with open(COUN + INDUS + '.json', 'r') as fp:
 '---------------------------------------------------------------------------------------------------------------------------------'
 
 defaultKey = ['beta', 'enterpriseToEbitda','enterpriseToRevenue','pegRatio','priceToBook','profitMargins','forwardPE']
+financialData = ['currentRatio','debtToEquity','ebitdaMargins','quickRatio','profitMargins','operatingMargins']
 
 for i in range(len(defaultKey)):
     item = defaultKey[i]
