@@ -45,6 +45,8 @@ INDUS = 'Biotechnology'
 
 companylist = fd.select_equities(country=COUN, industry=INDUS)
 
+companylist = {k:v for k,v in companylist.items() if not '.' in k}
+
 '-----------------------------------------------------------------------------------------------------------------------------'
 # can be deactivitaed if json file exists
 fundamentals = {}
