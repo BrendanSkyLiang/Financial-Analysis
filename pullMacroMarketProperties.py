@@ -40,13 +40,18 @@ equities_all_categories = fd.show_options('equities')
 
 
 COUN = 'United States'
-INDUS = 'Biotechnology'
+INDUS = 'Software - Infrastructure'
 
 
 companylist = fd.select_equities(country=COUN, industry=INDUS)
 
 companylist = {k:v for k,v in companylist.items() if not '.' in k}
 
+print(len(companylist))
+
+input('press enter to continue')
+
+print('getting fundamentals and building dict')
 '-----------------------------------------------------------------------------------------------------------------------------'
 # can be deactivitaed if json file exists
 fundamentals = {}
@@ -71,8 +76,8 @@ defaultKey = ['beta', 'enterpriseToEbitda','enterpriseToRevenue','pegRatio','pri
 financialData = ['currentRatio','debtToEquity','ebitdaMargins','quickRatio','profitMargins','operatingMargins']
 
 for i in range(len(defaultKey)):
+   
     item = defaultKey[i]
-
     housing = 'defaultKeyStatistics'
 
     long_name = []
