@@ -22,6 +22,8 @@ from yfinance import download
 import matplotlib.pyplot as plt
 import json
 
+
+
 Cs = ['b','g','r','c','m','y','k','tab:orange','tab:olive','indigo','aquamarine','tomato','navy','khaki','maroon','deepskyblue','forestgreen']
 
 '----------------------------------------------------------------------------------------------------------------------------'
@@ -40,7 +42,7 @@ equities_all_categories = fd.show_options('equities')
 
 
 COUN = 'United States'
-INDUS = 'Software - Infrastructure'
+INDUS = 'Consumer Electronics'
 
 
 companylist = fd.select_equities(country=COUN, industry=INDUS)
@@ -54,16 +56,16 @@ input('press enter to continue')
 print('getting fundamentals and building dict')
 '-----------------------------------------------------------------------------------------------------------------------------'
 # can be deactivitaed if json file exists
-fundamentals = {}
-for symbol in companylist:
-    fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
+# fundamentals = {}
+# for symbol in companylist:
+#     fundamentals[symbol] = get_json("https://finance.yahoo.com/quote/" + symbol)
 
-# stock_data = download(list(companylist))
+# # stock_data = download(list(companylist))
 
-fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
+# fundamentals = {k:v for k,v in fundamentals.items() if not '.' in k}
 
-with open(COUN + INDUS + '.json', 'w') as fp:
-    json.dump(fundamentals, fp)
+# with open(COUN + INDUS + '.json', 'w') as fp:
+#     json.dump(fundamentals, fp)
 
 '------------------------------------------------------------------------------------------------------------------------------'
 
@@ -126,14 +128,52 @@ for i in range(len(defaultKey)):
     Combined.to_csv(COUN + ' ' +  INDUS + ' ' + item + '.csv', index = False)
 
 
+for i in range(len(financialData)):
+   
+    item = financialData[i]
+    housing = 'financialData'
 
-
-
-
-
-
-
-
-
-
-
+    long_name = []
+    parameter = []
+    
+    for symbol in fundamentals:
+        if len(fundamentals[symbol]) < 10:
+            continue
+        elif fundamentals[symbol][housing] is None:
+            continue
+        elif fundamentals[symbol][housing][item] is None:
+            continue
+        
+        a = fundamentals[symbol][housing][item]
+        b = fundamentals[symbol]['quoteType']['longName']
+        long_name.append(b)
+        parameter.append(a)
+    
+        if fundamentals is None:
+            continue
+    
+    
+    # long_name = list(dict.fromkeys(long_name))
+    # parameter = list(dict.fromkeys(parameter))
+    
+    y_pos = np.arange(len(parameter))
+    
+    
+    # Graphing Controls
+    
+    plt.barh(y_pos, parameter, color = Cs)
+    plt.yticks(y_pos, long_name, rotation='horizontal')
+    plt.tick_params(axis = 'y', labelsize = 4)
+    plt.margins(0.2)
+    plt.xlabel(item)
+    plt.grid(b = True)
+    plt.subplots_adjust(bottom=0.15)
+    
+    
+    plt.tight_layout()
+    plt.savefig(COUN + ' ' +  INDUS + ' ' + item + '.png', dpi=600)
+    plt.show()
+    
+    # Export Data to csv
+    Combined = pd.DataFrame({'long_name': long_name, item : parameter})
+    Combined.to_csv(COUN + ' ' +  INDUS + ' ' + item + '.csv', index = False)
