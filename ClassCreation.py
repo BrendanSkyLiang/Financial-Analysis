@@ -37,6 +37,11 @@ class Company:
         self.debtToEquity = debtToEquity
         self.operatingMargins = operatingMargins
         self.earningsGrowth = earningsGrowth
+        
+def constructBarH(parameter, name):
+    y_pos = np.arange(len(name))
+    plt.barh(y_pos, parameter)
+    plt.yticks(y_pos, name, rotation='horizontal')
 
 companyList = ['AAPL','STEM','MP','BABA','TSM','CTXR','LMT','TSLA','C']
 
@@ -60,13 +65,13 @@ for i in range(len(companyList)):
     earningsGrowth = fundamentals[companyList[i]]['financialData']['earningsGrowth']
     globals()['%s' %companyList[i]] = Company(name, sharePrice, marketCap, forwardPE, pegRatio, priceToBook, currentRatio, ebitdaMargins, quickRatio, profitMargins, debtToEquity, operatingMargins, earningsGrowth)
     
+    
 forwardPE = []
 for i in range(len(companyList)):
     forwardPE.append(globals()['%s' %companyList[i]].forwardPE)
     
-y_pos = np.arange(len(companyList))
-plt.barh(y_pos, forwardPE)
-plt.yticks(y_pos, companyList, rotation='horizontal')
+constructBarH(forwardPE, companyList)
+    
     
     
     
