@@ -59,3 +59,14 @@ for i in range(len(companyList)):
     operatingMargins = fundamentals[companyList[i]]['financialData']['operatingMargins']
     earningsGrowth = fundamentals[companyList[i]]['financialData']['earningsGrowth']
     globals()['%s' %companyList[i]] = Company(name, sharePrice, marketCap, forwardPE, pegRatio, priceToBook, currentRatio, ebitdaMargins, quickRatio, profitMargins, debtToEquity, operatingMargins, earningsGrowth)
+    
+forwardPE = []
+for i in range(len(companyList)):
+    forwardPE.append(globals()['%s' %companyList[i]].forwardPE)
+    
+y_pos = np.arange(len(companyList))
+plt.barh(y_pos, forwardPE)
+plt.yticks(y_pos, companyList, rotation='horizontal')
+    
+    
+    
