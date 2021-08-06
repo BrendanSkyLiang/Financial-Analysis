@@ -12,10 +12,14 @@ import pandas_datareader as dr
 import numpy as np
 import pandas as pd
 
+
+def place_value(number):
+    return ("{:,}".format(number))
+
 '''---- General input variables ----'''
 
 company_ticker = 'LMT'
-market_risk_premium = 0.05
+market_risk_premium = 0.1
 debt_return = 0.01
 long_term_growth = 0.01
 tax_rate = 0.3
@@ -64,7 +68,7 @@ def get_forecast(input_df, cagr, margin, long_term_growth):
 def get_wacc(company_ticker, market_risk_premium, debt_return, tax_rate):
     risk_free_rate_df = dr.DataReader('^TNX', 'yahoo') 
     risk_free_rate = (risk_free_rate_df.iloc[len(risk_free_rate_df)-1,5])/100
-    equity_beta = si.get_quote_table('msft')['Beta (5Y Monthly)']
+    equity_beta = si.get_quote_table(company_ticker)['Beta (5Y Monthly)']
     equity_return = risk_free_rate+equity_beta*(market_risk_premium)
     balance_sheet_df = si.get_balance_sheet(company_ticker)
     short_term_debt_series = balance_sheet_df.loc['shortLongTermDebt']
@@ -87,7 +91,7 @@ def get_wacc(company_ticker, market_risk_premium, debt_return, tax_rate):
     company_value = market_cap + net_debt
     WACC = market_cap/company_value * equity_return + net_debt/company_value * debt_return * (1-tax_rate)
     return WACC
-
+    
 def get_net_debt():
     
     balance_sheet_df = si.get_balance_sheet(company_ticker)
@@ -124,7 +128,7 @@ for i in range(iterations):
     forecast = get_forecast(input_df, cagr, margin, long_term_rate)
     hist_lst.append(discount(forecast, discount_rate, long_term_rate)-net_debt)
 hist_array = np.array(hist_lst)
-plt.hist(hist_array, bins=50, align='mid', color = 'steelblue', edgecolor='black')
+plt.hist(hist_array, bins=80, align='mid', color = 'steelblue', edgecolor='black')
 plt.title('Sample Distribution ' + company_ticker, {'fontname':'Calibri'})
 plt.xlabel('Equity Value in $', {'fontname':'Calibri'})
 plt.ylabel('Frequency', {'fontname':'Calibri'})
@@ -139,6 +143,6 @@ upper_bound = mean+1.96*standard_error
 pricepershare = mean / sharesOutstanding
 
 
-print('Lower Bound = ' + str(lower_bound))
-print('Upper Bound = ' + str(upper_bound))
-print('pricePerShare = ' + str(pricepershare))
+print('Lower Bound = ' + str(place_value(lower_bound)))
+print('Upper Bound = ' + str(place_value(upper_bound)))
+print('pricePerShare = ' + str(place_value(pricepershare)))
